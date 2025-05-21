@@ -1,22 +1,9 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-    useColorScheme,
-} from "react-native";
+import { Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { API } from "../config/api";
-import { darkTheme, lightTheme } from "../theme/theme";
 
 export default function RegisterScreen() {
-  const scheme = useColorScheme();
-  const theme = scheme === "dark" ? darkTheme : lightTheme;
-
   const [form, setForm] = useState({ email: "", password: "", username: "", birthday: "" });
   const router = useRouter();
 
@@ -28,65 +15,71 @@ export default function RegisterScreen() {
 
     try {
       const res = await API.post("register.php", form);
+
       if (res.data.status === "pending") {
-        Alert.alert("Registered", "Check your email to verify.");
+        Alert.alert("Registration Successful", "Please check your email to verify your account.");
         router.replace("/login");
       } else {
-        Alert.alert("Error", res.data.message || "Registration failed.");
+        Alert.alert("Registration Failed", res.data.message || "An unexpected error occurred.");
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Something went wrong.");
+      console.error("Registration error:", error);
+      Alert.alert("Error", "An unexpected error occurred during registration. Please try again.");
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.primary }]}>Create Your Account</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Create Your Account</Text>
 
-      {["Email", "Password", "Username", "Birthday (YYYY-MM-DD)"].map((label, idx) => {
-        const key = label.toLowerCase().split(" ")[0];
-        return (
-          <View key={idx}>
-            <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
-            <TextInput
-              style={styles.input}
-              secureTextEntry={key === "password"}
-              keyboardType={key === "birthday" ? "numbers-and-punctuation" : "default"}
-              onChangeText={(v) => setForm({ ...form, [key]: v })}
-              placeholder={label}
-              autoCapitalize="none"
-            />
-          </View>
-        );
-      })}
+      <TextInput
+        style={styles.input}
+        onChangeText={(e) => setForm({ ...form, email: e })}
+        value={form.email}
+        placeholder="Enter your email"
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
 
-      <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={register}>
-        <Text style={styles.buttonText}>Register</Text>
-      </TouchableOpacity>
+      <TextInput
+        style={styles.input}
+        onChangeText={(e) => setForm({ ...form, password: e })}
+        value={form.password}
+        placeholder="Enter your password"
+        secureTextEntry
+      />
+
+      <TextInput
+        style={styles.input}
+        onChangeText={(e) => setForm({ ...form, username: e })}
+        value={form.username}
+        placeholder="Choose a unique username"
+        autoCapitalize="none"
+      />
+
+      <TextInput
+        style={styles.input}
+        onChangeText={(e) => setForm({ ...form, birthday: e })}
+        value={form.birthday}
+        placeholder="Enter your birthday (YYYY-MM-DD)"
+        keyboardType="numbers-and-punctuation"
+      />
+
+      <Button title="Register" onPress={register} color="#6A057F" />
 
       <TouchableOpacity onPress={() => router.push("/login")}>
-        <Text style={[styles.linkText, { color: theme.accent }]}>Already have an account? Login</Text>
+        <Text style={styles.loginText}>
+          Already have an account? <Text style={styles.linkText}>Login here</Text>
+        </Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 26, fontWeight: "700", textAlign: "center", marginBottom: 30 },
-  label: { fontSize: 16, marginBottom: 6 },
-  input: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    fontSize: 16,
-    marginBottom: 20,
-    borderColor: "#ccc",
-    borderWidth: 1,
-  },
-  button: { padding: 15, borderRadius: 8, alignItems: "center", marginVertical: 15 },
-  buttonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
-  linkText: { textAlign: "center", fontSize: 16, marginTop: 10 },
+  container: { flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#f9f9f9" },
+  title: { fontSize: 28, textAlign: "center", marginBottom: 40, color: "#333" },
+  input: { height: 50, borderColor: "#ddd", borderWidth: 1, borderRadius: 8, paddingHorizontal: 15, marginBottom: 20 },
+  loginText: { textAlign: "center", fontSize: 16, color: "#666" },
+  linkText: { color: "#6A057F", fontWeight: "bold" },
 });

@@ -5,7 +5,7 @@ export default function ChatScreen() {
   return (
     <View style={{ flex: 1 }}>
       <Header />
-      <Text style={{ fontSize: 24, padding: 20 }}>💬 Chat Room</Text>
+      <Text style={{ fontSize: 22, padding: 20 }}>💬 Chat Screen</Text>
     </View>
   );
 }

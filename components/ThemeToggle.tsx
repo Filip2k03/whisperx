@@ -1,16 +1,11 @@
-import { useEffect, useState } from "react";
-import { Switch, Text, useColorScheme, View } from "react-native";
+import { useState } from "react";
+import { Switch, Text, View } from "react-native";
 
 export default function ThemeToggle() {
-  const colorScheme = useColorScheme();
-  const [enabled, setEnabled] = useState(colorScheme === "dark");
-
-  useEffect(() => {
-    // Save preference to localStorage or asyncStorage if needed
-  }, [enabled]);
+  const [enabled, setEnabled] = useState(false);
 
   return (
-    <View style={{ marginVertical: 20, flexDirection: "row", alignItems: "center", gap: 10 }}>
+    <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 20 }}>
       <Text>{enabled ? "🌙 Dark Mode" : "☀️ Light Mode"}</Text>
       <Switch value={enabled} onValueChange={() => setEnabled(!enabled)} />
     </View>
